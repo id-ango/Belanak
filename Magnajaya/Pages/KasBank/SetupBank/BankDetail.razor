@@ -1,0 +1,106 @@
+﻿@page "/KasBank/SetupBank/BankDetail"
+
+@using Magnajaya.Data
+@using  Magnajaya.Services.Kasbank
+@inject IJSRuntime jsRuntime
+@inject IKasbankService service
+@using Magnajaya.Models
+
+<div class="modal" tabindex="-1" role="dialog" id="taskModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">@CustomHeader</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <EditForm Model="@TaskObject" OnValidSubmit="@HandleValidSubmit">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
+                    
+                    <div class="form-group">
+                        <label for="kode">Kode</label>
+                        <input type="hidden" @bind-value="@TaskObject.CbBankId" />
+                        <InputText disabled="@IsDisabled" id="kode" class="form-control" style="text-transform:uppercase" @bind-Value="@TaskObject.Kode" />
+                    </div>
+                    <div class="form-group">
+                        <label for="nama">Nama</label>
+                        <InputText id="nama" class="form-control" @bind-Value="@TaskObject.NmBank" />
+                    </div>
+                    <div class="form-group">
+                        <label for="SldAwal">Saldo Awal</label>
+                        <InputNumber id="SldAwal" class="form-control" @bind-Value="@TaskObject.SldAwal" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="kSldAwal">Beginning Balance</label>
+                        <InputNumber id="kSldAwal" class="form-control" @bind-Value="@TaskObject.KsldAwal" />
+                    </div>
+                    <div class="form-group">
+                        <label for="kurs">Kurs</label>
+                        <InputSelect id="kurs" class="form-control" style="text-transform:uppercase" @bind-Value=@TaskObject.Kurs>
+                            <option value=""></option>
+                            <option value="USD">USD</option>
+                            <option value="EUR">EURO</option>
+                        </InputSelect>
+
+                    </div>
+                    <div class="form-group">
+                        <label for="tanggal">Tanggal Saldo Awal</label>
+                        <InputDate id="tanggal" name="math" @bind-Value="@TaskObject.ClrDate" />
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                </EditForm>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public CbBank TaskObject { get; set; }
+
+    [Parameter]
+    public Action DataChanged { get; set; }
+
+    [Parameter]
+    public bool IsDisabled { get; set; }
+
+    [Parameter]
+    public RenderFragment CustomHeader { get; set; }
+
+
+    private async Task CloseTaskModal()
+    {
+        await jsRuntime.InvokeAsync<object>("CloseModal", "taskModal");
+    }
+
+    private async void HandleValidSubmit()
+    {
+        if (TaskObject.CbBankId == 0)
+        {
+
+            await service.Add(TaskObject);
+
+        }
+        else
+        {
+            await service.Update(TaskObject);
+        }
+
+        if (TaskObject.NmBank == "Kode Bank sudah ada!!")
+        {
+        await jsRuntime.InvokeAsync<object>("CekKode");
+        }
+        else {
+            await CloseTaskModal();
+            DataChanged?.Invoke();
+
+        } }
+
+
+
+}

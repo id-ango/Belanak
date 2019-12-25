@@ -1,0 +1,103 @@
+﻿@page "/KasBank/SetupBank"
+
+@using Magnajaya.Data
+@using  Magnajaya.Services.Kasbank
+@using Magnajaya.Pages.KasBank.SetupBank
+@inject IJSRuntime jsRuntime
+@inject IKasbankService service
+
+<h1>Setup Bank</h1>
+
+@if (toDoList == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Kode</th>
+                <th>Nama</th>
+                <th>Saldo</th>
+                <th>Balance</th>
+                <th>Kurs</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var toDoItem in toDoList)
+            {
+            <tr>
+                <td>@toDoItem.Kode</td>
+                <td>@toDoItem.NmBank</td>
+                <td>@toDoItem.Saldo.ToString("##,#.##")</td>
+                <td>@toDoItem.KSaldo.ToString("##,#.##")</td>
+                <td>@toDoItem.Kurs</td>
+                <td><input type="button" class="btn btn-primary" value="Edit" @onclick="(() => PrepareForEdit(toDoItem))" data-toggle="modal" data-target="#taskModal" /></td>
+                <td><input type="button" class="btn btn-danger" value="Delete"  @onclick="(() => PrepareForDelete(toDoItem))" data-toggle="modal" data-target="#confirmDeleteModal"  /></td>
+            </tr>
+            }
+        </tbody>
+    </table>
+}
+<div>
+    <input type="button" data-toggle="modal" data-target="#taskModal" class="btn btn-primary" value="Add Bank" @onclick="(() => InitializeTaskObject())"  />
+</div>
+
+<BankDetail TaskObject=taskObject IsDisabled="@isDisabled" DataChanged="@DataChanged">
+    <CustomHeader>@CustomHeader</CustomHeader>
+</BankDetail>
+
+<ConfirmDialog OnClick="@Delete"></ConfirmDialog>
+
+
+@code {
+    List<CbBank> toDoList;
+    CbBank taskObject = new CbBank();
+    string CustomHeader;
+    bool isDisabled;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        toDoList = await service.Get();
+
+    }
+
+    private void InitializeTaskObject()
+    {
+        taskObject = new CbBank();
+        taskObject.ClrDate = DateTime.Now;
+        CustomHeader = "Add New Bank";
+        isDisabled = false;
+    }
+
+    private async void DataChanged()
+    {
+        toDoList = await service.Get();
+        StateHasChanged();
+    }
+
+    private  void PrepareForEdit(CbBank task)
+    {
+        taskObject = task;
+        CustomHeader = "Edit Bank";
+        isDisabled = true;
+    }
+
+    private  void PrepareForDelete(CbBank task)
+    {
+        taskObject = task;
+
+    }
+
+    private async Task Delete()
+    {
+
+        var task = await service.Delete(taskObject.CbBankId);
+        await jsRuntime.InvokeAsync<object>("CloseModal", "confirmDeleteModal");
+        toDoList = await service.Get();
+        taskObject = new CbBank();
+
+    }
+}
