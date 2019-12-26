@@ -15,5 +15,9 @@ namespace Magnajaya.Data
         }
 
         public DbSet<CbBank> Banks { get; set; }
+        public DbSet<CbSrccd> CbCodes { get; set; }
+        public DbSet<CbGrp> CbGroups { get; set; }
+        public DbSet<CbTransH> CbTransHs { get; set; }
+        public DbSet<CbTransD> CbTransDs { get; set; }
     }
 }

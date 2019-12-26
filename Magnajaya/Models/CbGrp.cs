@@ -10,6 +10,7 @@ namespace Magnajaya.Models
         public string Grp { get; set; }
         public string NamaGrp { get; set; }
         public string GrpNo { get; set; }
+
     }
 }
     

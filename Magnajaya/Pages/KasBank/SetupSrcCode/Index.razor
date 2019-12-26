@@ -1,0 +1,106 @@
+﻿@page "/KasBank/SetupSrcCode"
+
+
+@using Magnajaya.Data
+@using  Magnajaya.Services.Kasbank
+@using Magnajaya.Pages.KasBank.SetupBank
+@using Magnajaya.Pages.KasBank.SetupSrcCode
+@inject IJSRuntime jsRuntime
+@inject ISourceCodeService service
+
+<h1>Setup Source Code</h1>
+
+@if (toDoList == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Kode</th>
+                <th>Nama</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var toDoItem in toDoList)
+            {
+                <tr>
+                    <td>@toDoItem.SrcCode</td>
+                    <td>@toDoItem.NamaSrc</td>
+
+                    <td><input type="button" class="btn btn-primary" value="Edit" @onclick="(() => PrepareForEdit(toDoItem))" data-toggle="modal" data-target="#taskModal" /></td>
+                    <td><input type="button" class="btn btn-danger" value="Delete" @onclick="(() => PrepareForDelete(toDoItem))" data-toggle="modal" data-target="#confirmDeleteModal" /></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+<div>
+    <input type="button" data-toggle="modal" data-target="#taskModal" class="btn btn-primary" value="Add Code" @onclick="(() => InitializeTaskObject())" />
+</div>
+
+<SrcCodeDetail TaskObject=taskObject TaskGroup =toGroupList IsDisabled="@isDisabled" DataChanged="@DataChanged">
+    <CustomHeader>@CustomHeader</CustomHeader>
+</SrcCodeDetail>
+
+<ConfirmDialog OnClick="@Delete"></ConfirmDialog>
+
+
+@code {
+    List<CbSrccd> toDoList;
+    List<CbGrp> toGroupList;
+
+    CbGrp taskGrp = new CbGrp();
+
+    CbSrccd taskObject = new CbSrccd();
+
+    string CustomHeader;
+    bool isDisabled;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        toDoList = await service.Get();
+        toGroupList = await service.GetSrc();
+    }
+
+    private void InitializeTaskObject()
+    {
+        taskObject = new CbSrccd();
+
+        CustomHeader = "Add New Source Code";
+        isDisabled = false;
+    }
+
+    private async void DataChanged()
+    {
+        toDoList = await service.Get();
+        StateHasChanged();
+    }
+
+    private void PrepareForEdit(CbSrccd task)
+    {
+        taskObject = task;
+        CustomHeader = "Edit Bank";
+        isDisabled = true;
+    }
+
+    private void PrepareForDelete(CbSrccd task)
+    {
+        taskObject = task;
+
+    }
+
+    private async Task Delete()
+    {
+
+        var task = await service.Delete(taskObject.CbSrccdId);
+        await jsRuntime.InvokeAsync<object>("CloseModal", "confirmDeleteModal");
+        toDoList = await service.Get();
+        taskObject = new CbSrccd();
+
+    }
+}

@@ -44,6 +44,7 @@ namespace Magnajaya
             services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
             services.AddSingleton<WeatherForecastService>();
             services.AddTransient<IKasbankService,KasbankService>();
+            services.AddTransient<ISourceCodeService, SourceCodeService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

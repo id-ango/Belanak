@@ -4,14 +4,16 @@ using Magnajaya.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Magnajaya.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20191225133733_addcode")]
+    partial class addcode
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -131,174 +133,6 @@ namespace Magnajaya.Data.Migrations
                     b.HasIndex("CbGrpId");
 
                     b.ToTable("CbCodes");
-                });
-
-            modelBuilder.Entity("Magnajaya.Models.CbTransD", b =>
-                {
-                    b.Property<int>("CbTransDId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("AcctSet")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("Bayar")
-                        .HasColumnType("decimal(18, 2)");
-
-                    b.Property<int>("CbTransHId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Cek")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("DocNo")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("GlAcct")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("Jumlah")
-                        .HasColumnType("decimal(18, 2)");
-
-                    b.Property<decimal>("KBayar")
-                        .HasColumnType("decimal(18, 2)");
-
-                    b.Property<decimal>("KJumlah")
-                        .HasColumnType("decimal(18, 2)");
-
-                    b.Property<decimal>("KTerima")
-                        .HasColumnType("decimal(18, 2)");
-
-                    b.Property<decimal>("KValue")
-                        .HasColumnType("decimal(18, 2)");
-
-                    b.Property<string>("Keterangan")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Kode")
-                        .HasColumnType("nvarchar(2)")
-                        .HasMaxLength(2);
-
-                    b.Property<string>("Kurs")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("NamaSrc")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("NmBank")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("NoPrj")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("NonPPn")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("RefNo")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SrcCode")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("Tanggal")
-                        .HasColumnType("date");
-
-                    b.Property<decimal>("Terima")
-                        .HasColumnType("decimal(18, 2)");
-
-                    b.Property<string>("Tipe")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("CbTransDId");
-
-                    b.HasIndex("CbTransHId")
-                        .IsUnique();
-
-                    b.ToTable("CbTransDs");
-                });
-
-            modelBuilder.Entity("Magnajaya.Models.CbTransH", b =>
-                {
-                    b.Property<int>("CbTransHId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("AcctSet")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Cek")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Customer")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("Debet")
-                        .HasColumnType("decimal(18, 2)");
-
-                    b.Property<string>("Docno")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Giro")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("KDebet")
-                        .HasColumnType("decimal(18, 2)");
-
-                    b.Property<decimal>("KKredit")
-                        .HasColumnType("decimal(18, 2)");
-
-                    b.Property<string>("Keterangan")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Kode")
-                        .HasColumnType("nvarchar(2)")
-                        .HasMaxLength(2);
-
-                    b.Property<decimal>("Kredit")
-                        .HasColumnType("decimal(18, 2)");
-
-                    b.Property<string>("Kurs")
-                        .HasColumnType("nvarchar(3)")
-                        .HasMaxLength(3);
-
-                    b.Property<string>("NamaCust")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("NamaGiro")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("NoPrj")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("NonPPn")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("RefNo")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("Saldo")
-                        .HasColumnType("decimal(18, 2)");
-
-                    b.Property<string>("Supplier")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("Tanggal")
-                        .HasColumnType("date");
-
-                    b.Property<DateTime>("TglCair")
-                        .HasColumnType("date");
-
-                    b.Property<DateTime>("TglGiro")
-                        .HasColumnType("date");
-
-                    b.Property<DateTime>("TglGiro2")
-                        .HasColumnType("date");
-
-                    b.HasKey("CbTransHId");
-
-                    b.ToTable("CbTransHs");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -506,15 +340,6 @@ namespace Magnajaya.Data.Migrations
                     b.HasOne("Magnajaya.Models.CbGrp", "CbGrp")
                         .WithMany()
                         .HasForeignKey("CbGrpId");
-                });
-
-            modelBuilder.Entity("Magnajaya.Models.CbTransD", b =>
-                {
-                    b.HasOne("Magnajaya.Models.CbTransH", null)
-                        .WithOne("CbTransD")
-                        .HasForeignKey("Magnajaya.Models.CbTransD", "CbTransHId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

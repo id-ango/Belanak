@@ -11,6 +11,7 @@ namespace Magnajaya.Models
         public string NamaSrc { get; set; }
         public string GlAcct { get; set; }
         public string Grp { get; set; }
+        public CbGrp CbGrp { get; set; }
     }
 }
 
