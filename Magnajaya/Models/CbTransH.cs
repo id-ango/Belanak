@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
+using Magnajaya.Models;
 
 namespace Magnajaya.Models
 {
@@ -44,7 +45,20 @@ namespace Magnajaya.Models
         public bool NonPPn { get; set; }
         public string Cek { get; set; }
         public CbTransD CbTransD { get; set; }
+
+        public string NamaBank (List<CbBank> bank)
+        {
+            string kode;
+            kode = Kode;
+            var namabank = bank.Find(s => s.Kode == kode).NmBank;            
+
+            return namabank;
+        }
+
+
     }
+
+    
 }
 
   

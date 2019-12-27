@@ -4,11 +4,14 @@
 @using Magnajaya.Data
 @using  Magnajaya.Services.Kasbank
 @using Magnajaya.Pages.KasBank.SetupBank
-@using Magnajaya.Pages.KasBank.SetupSrcCode
+@using Magnajaya.Pages.KasBank.Transaksi
 @inject IJSRuntime jsRuntime
-@inject ISourceCodeService service
+@inject ITransDetailService service
+@inject IKasbankService servicebank
+@inject ISourceCodeService servicecode
 
-<h1>Setup Source Code</h1>
+
+<h1>Transaksi</h1>
 
 @if (toDoList == null)
 {
@@ -19,8 +22,11 @@ else
     <table class="table">
         <thead>
             <tr>
-                <th>Kode</th>
-                <th>Nama</th>
+                <th>Dokumen</th>
+                <th>Tanggal</th>
+                <th>Bank</th>
+                <th>Keterangan</th>
+                <th>Jumlah</th>
 
             </tr>
         </thead>
@@ -28,8 +34,13 @@ else
             @foreach (var toDoItem in toDoList)
             {
                 <tr>
-                    <td>@toDoItem.SrcCode</td>
-                    <td>@toDoItem.NamaSrc</td>
+
+                    <td>@toDoItem.Docno</td>
+                    <td>@toDoItem.Tanggal</td>
+                    <td>@toDoItem.NamaBank(toBankList)</td>
+                    <td>@toDoItem.Keterangan</td>
+                    <td>@toDoItem.Saldo.ToString("##,#.##")</td>
+
 
                     <td><input type="button" class="btn btn-primary" value="Edit" @onclick="(() => PrepareForEdit(toDoItem))" data-toggle="modal" data-target="#taskModal" /></td>
                     <td><input type="button" class="btn btn-danger" value="Delete" @onclick="(() => PrepareForDelete(toDoItem))" data-toggle="modal" data-target="#confirmDeleteModal" /></td>
@@ -42,20 +53,22 @@ else
     <input type="button" data-toggle="modal" data-target="#taskModal" class="btn btn-primary" value="Add Code" @onclick="(() => InitializeTaskObject())" />
 </div>
 
-<SrcCodeDetail TaskObject=taskObject TaskGroup =toGroupList IsDisabled="@isDisabled" DataChanged="@DataChanged">
+<TransDetail TaskObject=taskObject TaskGroup=toSrcList TaskBank="toBankList" IsDisabled="@isDisabled" DataChanged="@DataChanged">
     <CustomHeader>@CustomHeader</CustomHeader>
-</SrcCodeDetail>
+</TransDetail>
 
 <ConfirmDialog OnClick="@Delete"></ConfirmDialog>
 
 
 @code {
-    List<CbSrccd> toDoList;
-    List<CbGrp> toGroupList;
+    List<CbTransH> toDoList;
+    List<CbSrccd> toSrcList;
+    List<CbBank> toBankList;
 
-    CbGrp taskGrp = new CbGrp();
 
-    CbSrccd taskObject = new CbSrccd();
+    CbSrccd taskSrc = new CbSrccd();
+
+    CbTransH taskObject = new CbTransH();
 
     string CustomHeader;
     bool isDisabled;
@@ -64,15 +77,16 @@ else
     protected override async Task OnInitializedAsync()
     {
         toDoList = await service.Get();
-        toGroupList = await service.GetSrc();
+        toSrcList = await servicecode.Get();
+        toBankList = await servicebank.Get();
     }
 
     private void InitializeTaskObject()
     {
-        taskObject = new CbSrccd();
-
-        CustomHeader = "Add New Source Code";
-        isDisabled = false;
+        taskObject = new CbTransH();
+        taskObject.Tanggal = DateTime.Now;
+        CustomHeader = "Add New Transaksi";
+        isDisabled = true;
     }
 
     private async void DataChanged()
@@ -81,14 +95,14 @@ else
         StateHasChanged();
     }
 
-    private void PrepareForEdit(CbSrccd task)
+    private void PrepareForEdit(CbTransH task)
     {
         taskObject = task;
-        CustomHeader = "Edit Bank";
+        CustomHeader = "Edit Transaksi";
         isDisabled = true;
     }
 
-    private void PrepareForDelete(CbSrccd task)
+    private void PrepareForDelete(CbTransH task)
     {
         taskObject = task;
 
@@ -97,10 +111,10 @@ else
     private async Task Delete()
     {
 
-        var task = await service.Delete(taskObject.CbSrccdId);
+        var task = await service.Delete(taskObject.CbTransHId);
         await jsRuntime.InvokeAsync<object>("CloseModal", "confirmDeleteModal");
         toDoList = await service.Get();
-        taskObject = new CbSrccd();
+        taskObject = new CbTransH();
 
     }
 }

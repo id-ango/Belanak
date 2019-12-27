@@ -12,12 +12,14 @@ namespace Magnajaya.Services.Kasbank
    
         public interface ITransDetailService
         {
-            Task<List<CbBank>> Get();
-            Task<CbBank> Get(int id);
-            Task<CbBank> Add(CbBank cbBank);
-            Task<CbBank> Update(CbBank cbBank);
-            Task<CbBank> Delete(int id);
-        }
+            Task<List<CbTransH>> Get();
+            Task<CbTransH> Get(int id);
+            Task<CbTransH> Add(CbTransH cbBank);
+            Task<CbTransH> Update(CbTransH cbBank);
+            Task<CbTransH> Delete(int id);
+     
+     
+    }
 
 
         public class TransDetailService : ITransDetailService
@@ -29,49 +31,50 @@ namespace Magnajaya.Services.Kasbank
             _context = context;
         }
 
-        public async Task<CbBank> Add(CbBank cbBank)
+        public async Task<CbTransH> Add(CbTransH cbBank)
         {
-            string test = cbBank.Kode.ToUpper();
-            var cekFirst = _context.Banks.Where(x=>x.Kode == test).ToList() ;
+            string test = cbBank.Docno.ToUpper();
+            var cekFirst = _context.CbTransHs.Where(x=>x.Docno == test).ToList() ;
             if (cekFirst.Count == 0)
             {
-                cbBank.Saldo = cbBank.SldAwal;
-                cbBank.KSaldo = cbBank.KsldAwal;
-                cbBank.Kode = test;
+                ;
+                cbBank.Docno = test;
 
-                _context.Banks.Add(cbBank);
+                _context.CbTransHs.Add(cbBank);
                 await _context.SaveChangesAsync();
                 return cbBank;
             }
             else
-                cbBank.NmBank = "Kode Bank sudah ada!!";
+                cbBank.Keterangan = "No. Bukti sudah ada!!";
                 return cbBank;
         }
 
-        public async Task<CbBank> Delete(int id)
+        public async Task<CbTransH> Delete(int id)
         {
-            var bank = await _context.Banks.FindAsync(id);
-            _context.Banks.Remove(bank);
+            var bank = await _context.CbTransHs.FindAsync(id);
+            _context.CbTransHs.Remove(bank);
             await _context.SaveChangesAsync();
             return bank;
         }
 
-        public async Task<List<CbBank>> Get()
+        public async Task<List<CbTransH>> Get()
         {
-            return await _context.Banks.ToListAsync();
+                    
+            return await _context.CbTransHs.OrderByDescending(x =>x.Tanggal).ToListAsync();
         }
 
-        public async Task<CbBank> Get(int id)
+        public async Task<CbTransH> Get(int id)
         {
-            var bank = await _context.Banks.FindAsync(id);
+            var bank = await _context.CbTransHs.FindAsync(id);
             return bank;
         }
 
-        public async Task<CbBank> Update(CbBank cbBank)
+       
+       
+        public async Task<CbTransH> Update(CbTransH cbBank)
         {
             string test = cbBank.Kode.ToUpper();
-            cbBank.Saldo = cbBank.Saldo+cbBank.SldAwal;
-            cbBank.KSaldo = cbBank.KSaldo+cbBank.KsldAwal;
+          
             cbBank.Kode = test;
             _context.Entry(cbBank).State = EntityState.Modified;
             await _context.SaveChangesAsync();

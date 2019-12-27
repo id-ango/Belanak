@@ -45,6 +45,7 @@ namespace Magnajaya
             services.AddSingleton<WeatherForecastService>();
             services.AddTransient<IKasbankService,KasbankService>();
             services.AddTransient<ISourceCodeService, SourceCodeService>();
+            services.AddTransient<ITransDetailService, TransDetailService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

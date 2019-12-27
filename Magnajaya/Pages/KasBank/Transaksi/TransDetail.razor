@@ -3,11 +3,11 @@
 @using Magnajaya.Data
 @using  Magnajaya.Services.Kasbank
 @inject IJSRuntime jsRuntime
-@inject ISourceCodeService service
+@inject ITransDetailService service
 @using Magnajaya.Models
 
 <div class="modal" tabindex="-1" role="dialog" id="taskModal">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-lg" role="document" style="width:80%;">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">@CustomHeader</h5>
@@ -20,32 +20,124 @@
                     <DataAnnotationsValidator />
                     <ValidationSummary />
 
-                    <div class="form-group">
-                        <label for="kode">Kode</label>
-                        <input type="hidden" @bind-value="@TaskObject.CbSrccdId" />
-                        <InputText disabled="@IsDisabled" id="kode" class="form-control" style="text-transform:uppercase" @bind-Value="@TaskObject.SrcCode" />
-                    </div>
-                    <div class="form-group">
-                        <label for="nama">Nama</label>
-                        <InputText id="nama" class="form-control" @bind-Value="@TaskObject.NamaSrc" />
+                    <div class="row">
+
+                        <div class="col-md-7">
+                            <label for="docno">Dokumen No.</label>
+                            <input type="hidden" @bind-value="@TaskObject.CbTransHId" />
+                            <InputText disabled="@IsDisabled" id="docno" class="form-control" style="text-transform:uppercase" @bind-Value="@TaskObject.Docno" />
+                        </div>
                     </div>
 
+                    <div class="row">
 
-                    <div class="form-group">
-                        <label for="group">Group</label>
-                        <InputSelect id="group" class="form-control" @bind-Value=@TaskObject.Grp>
-                            <option value=""></option>
-                            @if (TaskGroup != null)
-                            {
-                                @foreach (var group in TaskGroup)
+
+                        <div class="col-md-7">
+                            <label for="bank">Bank</label>
+                            <InputSelect id="bank" class="form-control" style="text-transform:uppercase" @bind-Value=@TaskObject.Kode>
+
+                                @if (TaskBank != null)
                                 {
-                                    <option value=@group.NamaGrp>@group.NamaGrp</option>
+                                    @foreach (var bank in TaskBank)
+                                    {
+                                        <option value=@bank.Kode>@bank.NmBank @bank.Kurs</option>
+                                    }
                                 }
-                            }
-                        </InputSelect>
+                            </InputSelect>
+
+                        </div>
+                        <div class="col-md-5">
+
+                            <label for="tanggal">Tanggal</label>
+                            <InputDate id="tanggal" class="form-control" @bind-Value="@TaskObject.Tanggal" />
+
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+
+                            <label for="keterangan">Catatan</label>
+                            <InputTextArea id="keterangan" class="form-control" @bind-Value="@TaskObject.Keterangan" />
+
+                        </div>
 
                     </div>
+                    <div>
+                        <br />
+                    </div>
+                    <div class="container" style="background-color:cornflowerblue">
+                        <div class="row">
+                            <div class="col-md-5">
 
+                                <label for="srckode">Source Kode</label>
+                                <InputSelect id="srckode" class="form-control" style="text-transform:uppercase" @bind-Value=@SrcKode>
+
+                                    @if (TaskGroup != null)
+                                    {
+                                        @foreach (var group in TaskGroup)
+                                        {
+                                            <option value=@group.SrcCode>@group.NamaSrc</option>
+                                        }
+                                    }
+                                </InputSelect>
+                            </div>
+                            <div class="col-md-7">
+
+                                <label for="remark">Keterangan</label>
+                                <InputText id="remark" class="form-control" @bind-Value=@remarks />
+
+
+                            </div>
+
+                        </div>
+
+                        <div class="row">
+
+                            <div class="col-md-4">
+
+                                <label for="terima">Terima</label>
+                                <InputNumber id="terima" class="form-control" @bind-Value=@Terima />
+
+
+                            </div>
+                            <div class="col-md-4">
+
+                                <label for="bayar">Bayar</label>
+                                <InputNumber id="bayar" class="form-control" @bind-Value=@Bayar />
+
+
+                            </div>
+                            <div class="col-md-4">
+                                <label for="detail">Tombol</label>
+                                <button id="detail" type="button" class="btn btn-danger form-control">Add Detail</button>
+                            </div>
+                        </div>
+                        <div class="row">
+
+                            <div class="col-md-4">
+
+                                <label for="receipt">Receipt</label>
+                                <InputNumber id="receipt" class="form-control" @bind-Value=@Receipt />
+
+
+                            </div>
+                            <div class="col-md-4">
+
+                                <label for="payment">Payment</label>
+                                <InputNumber id="payment" class="form-control" @bind-Value=@Payment />
+
+
+                            </div>
+
+                        </div>
+                        <div class="row">
+                            <br />
+                        </div>
+                    </div>
+                    <div>
+                        <br />
+                    </div>
+                    
 
                     <button type="submit" class="btn btn-primary">Submit</button>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
@@ -57,10 +149,13 @@
 
 @code {
     [Parameter]
-    public CbSrccd TaskObject { get; set; }
+    public CbTransH TaskObject { get; set; }
 
     [Parameter]
-    public List<CbGrp> TaskGroup { get; set; }
+    public List<CbSrccd> TaskGroup { get; set; }
+
+    [Parameter]
+    public List<CbBank> TaskBank { get; set; }
 
 
     [Parameter]
@@ -73,6 +168,9 @@
     public RenderFragment CustomHeader { get; set; }
 
 
+    private string CekDoc, remarks;
+    private decimal Terima, Bayar, Payment, Receipt;
+    private string SrcKode;
 
 
     private async Task CloseTaskModal()
@@ -82,7 +180,7 @@
 
     private async void HandleValidSubmit()
     {
-        if (TaskObject.CbSrccdId == 0)
+        if (TaskObject.CbTransHId == 0)
         {
 
             await service.Add(TaskObject);
@@ -93,9 +191,9 @@
             await service.Update(TaskObject);
         }
 
-        if (TaskObject.NamaSrc == "Kode Source sudah ada!!")
+        if (TaskObject.Keterangan == "No. Bukti sudah ada!!")
         {
-            await jsRuntime.InvokeAsync<object>("CekKode", "Kode Source sudah ada!!");
+            await jsRuntime.InvokeAsync<object>("CekKode", "No. Bukti sudah ada!!");
         }
         else
         {
